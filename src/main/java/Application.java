@@ -1,9 +1,11 @@
+import exception.ParkingLotFullException;
+
 import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Application {
 
-  public static ParkingSystemOperator operator = new ParkingSystemOperator();
+  public static ParkingSystemInitializer initializer = new ParkingSystemInitializer();
 
   public static void main(String[] args) throws SQLException {
     operateParking();
@@ -45,11 +47,25 @@ public class Application {
   }
 
   public static void init(String initInfo) throws SQLException {
-    operator.initParkingSystem(initInfo);
+    initializer.initParkingSystem(initInfo);
+    initializer.close();
   }
 
-  public static String park(String carNumber) {
-    return "";
+  public static String park(String carNumber) throws SQLException {
+    Parker parker = new Parker();
+
+    boolean isParkingLotAvailable = parker.isParkingLotAvailable();
+    if (isParkingLotAvailable) {
+      String parkingLot = parker.findParkingLot();
+      int parkingSpace = parker.findParkingSpace(parkingLot);
+      ParkingTicket ticket = new ParkingTicket(parkingLot, parkingSpace, carNumber);
+      parker.parkIntoSpace(ticket);
+      parker.close();
+      return ticket.toString();
+    } else {
+      parker.close();
+      throw new ParkingLotFullException("非常抱歉，由于车位已满，暂时无法为您停车！");
+    }
   }
 
   public static String fetch(String ticket) {

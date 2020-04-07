@@ -1,7 +1,7 @@
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class ParkingSystemOperator {
+public class ParkingSystemInitializer {
 
   private JDBCUtils utils = new JDBCUtils();
 
@@ -37,10 +37,11 @@ public class ParkingSystemOperator {
 
   public void createParkingTable(String index) throws SQLException {
     String sql = String.format("CREATE TABLE IF NOT EXISTS parking_lot_%s (" +
-            "id SMALLINT, ticket_number VARCHAR(20));", index);
+            "id SMALLINT, plate_number VARCHAR(20));", index);
     utils.executeStatement(sql);
   }
 
-
-
+  public void close() {
+    utils.close();
+  }
 }

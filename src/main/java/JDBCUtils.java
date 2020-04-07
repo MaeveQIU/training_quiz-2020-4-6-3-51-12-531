@@ -4,7 +4,7 @@ public class JDBCUtils {
 
   private static final String URL = "jdbc:mysql://localhost:3306/parking_sys";
   private static final String USER = "root";
-  private static final String PASSWORD = "------";
+  private static final String PASSWORD = "--------";
   public Connection connection;
 
   public JDBCUtils() {
@@ -37,21 +37,11 @@ public class JDBCUtils {
 
   public ResultSet executeSelectStatement(String sql) {
     ResultSet resultSet = null;
-    Statement statement = null;
     try {
-      statement = connection.createStatement();
+      Statement statement = connection.createStatement();
       resultSet = statement.executeQuery(sql);
     } catch (SQLException e) {
       e.printStackTrace();
-    } finally {
-      if (statement != null) {
-        ;
-        try {
-          statement.close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
     }
     return resultSet;
   }
