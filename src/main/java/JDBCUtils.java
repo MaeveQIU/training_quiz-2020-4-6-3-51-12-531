@@ -29,7 +29,6 @@ public class JDBCUtils {
     try {
       statement = connection.createStatement();
       statement.executeUpdate(sql);
-      statement.close();
     } catch (SQLException e) {
       e.printStackTrace();
     }

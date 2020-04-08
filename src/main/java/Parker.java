@@ -21,22 +21,22 @@ public class Parker {
     return resultSet.getString("name");
   }
 
-  // Need change
   public int findParkingSpace(String parkingLot) throws SQLException {
-    String sql = String.format("SELECT COUNT(plate_number) AS count FROM parking_lot_%s;", parkingLot);
+    String sql = String.format("SELECT id FROM parking_lot_%s WHERE ISNULL(plate_number) ORDER BY id LIMIT 1;",
+            parkingLot);
     ResultSet resultSet = utils.executeSelectStatement(sql);
     resultSet.next();
-    int spaceNumber = resultSet.getInt("count") + 1;
+    int spaceNumber = resultSet.getInt("id");
     return spaceNumber;
   }
 
   public void parkIntoSpace(ParkingTicket ticket) throws SQLException {
     decreaseOneSpace(ticket.getParkingLot());
 
-    String sql = String.format("INSERT INTO parking_lot_%s (id, plate_number) VALUES (?, ?);", ticket.getParkingLot());
+    String sql = String.format("UPDATE parking_lot_%s SET plate_number = ? WHERE id = ?;", ticket.getParkingLot());
     PreparedStatement statement = utils.prepare(sql);
-    statement.setInt(1, ticket.getParkingSpaceNumber());
-    statement.setString(2, ticket.getPlateNumber());
+    statement.setString(1, ticket.getPlateNumber());
+    statement.setInt(2, ticket.getParkingSpaceNumber());
     statement.executeUpdate();
     statement.close();
   }

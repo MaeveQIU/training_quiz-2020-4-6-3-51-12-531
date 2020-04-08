@@ -1,11 +1,10 @@
+import exception.InvalidTicketException;
 import exception.ParkingLotFullException;
 
 import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Application {
-
-  public static ParkingSystemInitializer initializer = new ParkingSystemInitializer();
 
   public static void main(String[] args) throws SQLException {
     operateParking();
@@ -47,6 +46,7 @@ public class Application {
   }
 
   public static void init(String initInfo) throws SQLException {
+    ParkingSystemInitializer initializer = new ParkingSystemInitializer();
     initializer.initParkingSystem(initInfo);
     initializer.close();
   }
@@ -68,8 +68,20 @@ public class Application {
     }
   }
 
-  public static String fetch(String ticket) {
-    return "";
+  public static String fetch(String ticket) throws SQLException {
+    String[] ticketDetail = ticket.split(",");
+    ParkingTicket parkingTicket = new ParkingTicket(ticketDetail[0], Integer.parseInt(ticketDetail[1]), ticketDetail[2]);
+
+    Fetcher fetcher = new Fetcher();
+    boolean isTicketValidate = fetcher.isTicketValidate(parkingTicket);
+    if (isTicketValidate) {
+      fetcher.updateParkingDatabase(parkingTicket);
+      fetcher.close();
+      return parkingTicket.getPlateNumber();
+    } else {
+      fetcher.close();
+      throw new InvalidTicketException(" 很抱歉，无法通过您提供的停车券为您找到相应的车辆，请您再次核对停车券是否有效！");
+    }
   }
 
 }

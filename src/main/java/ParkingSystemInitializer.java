@@ -12,7 +12,7 @@ public class ParkingSystemInitializer {
     for (String infoDetail : initInfoArray) {
       String[] info = infoDetail.split(":");
       insertIntoParkingDatabase(info[0], Integer.parseInt(info[1]));
-      createParkingTable(info[0]);
+      createParkingTable(info[0], Integer.parseInt(info[1]));
     }
   }
 
@@ -35,10 +35,18 @@ public class ParkingSystemInitializer {
     statement.close();
   }
 
-  public void createParkingTable(String index) throws SQLException {
-    String sql = String.format("CREATE TABLE IF NOT EXISTS parking_lot_%s (" +
+  public void createParkingTable(String index, int capacity) throws SQLException {
+    String createSql = String.format("CREATE TABLE IF NOT EXISTS parking_lot_%s (" +
             "id SMALLINT, plate_number VARCHAR(20));", index);
-    utils.executeStatement(sql);
+    utils.executeStatement(createSql);
+
+    for (int i = 1; i < capacity + 1; i++) {
+      String insertSql = String.format("INSERT INTO parking_lot_%s (id) VALUES (?);", index);
+      PreparedStatement statement = utils.prepare(insertSql);
+      statement.setInt(1, i);
+      statement.executeUpdate();
+      statement.close();
+    }
   }
 
   public void close() {
