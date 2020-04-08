@@ -31,11 +31,7 @@ public class Fetcher {
     PreparedStatement statement = utils.prepare(sql);
     statement.setString(1, ticket.getParkingLot());
     ResultSet resultSet = statement.executeQuery();
-    if (!resultSet.next()) {
-      return false;
-    }
-    int capacity = resultSet.getInt("capacity");
-    return ticket.getParkingSpaceNumber() <= capacity;
+    return resultSet.next();
   }
 
   public void updateParkingDatabase(ParkingTicket ticket) throws SQLException {
